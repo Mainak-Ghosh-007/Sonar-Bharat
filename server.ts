@@ -83,7 +83,7 @@ Strictly categorize the issue as one of:
     });
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: contents,
       config: {
         systemInstruction: "You are Sonar Bharat, an advanced AI municipal auditing assistant for Indian streets. Classify user photo/text reports accurately. Respond only in structured JSON.",
