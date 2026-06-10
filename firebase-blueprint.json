@@ -1,0 +1,125 @@
+{
+  "entities": {
+    "Report": {
+      "title": "Civil Issue Report",
+      "description": "Represents a public civic issue or road defect complaint.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the report."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short summary or location description of the issue."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed explanation of the civic issue."
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Potholes",
+            "Broken Roads",
+            "Water Logging",
+            "Garbage Dump",
+            "Damaged Traffic Signal",
+            "Street Light Not Working",
+            "Drain Blockage",
+            "Fallen Trees",
+            "Others"
+          ]
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "Base64 or URL representation of the problem's photograph."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "Latitude GPS coordinate."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "Longitude GPS coordinate."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "In Progress",
+            "Resolved",
+            "Rejected"
+          ]
+        },
+        "userId": {
+          "type": "string",
+          "description": "The reporter's unique Firebase user ID."
+        },
+        "userName": {
+          "type": "string",
+          "description": "The reporter's public display name."
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "The reporter's email address."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the report was submitted."
+        },
+        "upvotesCount": {
+          "type": "number",
+          "description": "Sum of total upvotes for the issue."
+        },
+        "aiAnalysis": {
+          "type": "object",
+          "description": "AI-detected category, severity, and visual verification results."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "category",
+        "latitude",
+        "longitude",
+        "status",
+        "userId",
+        "userName",
+        "createdAt",
+        "upvotesCount"
+      ]
+    },
+    "Vote": {
+      "title": "Vote",
+      "description": "Represents a single upvote from a user to prevent duplicate votes.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User ID of the voter."
+        },
+        "votedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "votedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/reports/{reportId}": {
+      "schema": "Report",
+      "description": "Submissions of civic issues/problems."
+    },
+    "/reports/{reportId}/votes/{voteId}": {
+      "schema": "Vote",
+      "description": "Voter tracking for each report to avoid duplicate voting."
+    }
+  }
+}

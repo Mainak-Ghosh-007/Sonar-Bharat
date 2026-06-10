@@ -1,0 +1,107 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reuseable global helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Helper to validate the Report structure
+    function isValidReport(data) {
+      return data.keys().hasAll([
+        'id', 'title', 'description', 'category', 'latitude', 'longitude',
+        'status', 'userId', 'userName', 'createdAt', 'upvotesCount'
+      ]) &&
+      data.keys().size() <= 13 && // Allows optional 'userEmail' and 'imageUrl' and 'aiAnalysis'
+      data.id is string && data.id.size() <= 128 &&
+      data.title is string && data.title.size() <= 200 &&
+      data.description is string && data.description.size() <= 5000 &&
+      data.category in [
+        'Potholes', 'Broken Roads', 'Water Logging', 'Garbage Dump',
+        'Damaged Traffic Signal', 'Street Light Not Working', 'Drain Blockage',
+        'Fallen Trees', 'Others'
+      ] &&
+      data.latitude is number &&
+      data.longitude is number &&
+      data.status in ['Pending', 'In Progress', 'Resolved', 'Rejected'] &&
+      data.userId == request.auth.uid &&
+      data.userName is string && data.userName.size() <= 100 &&
+      data.upvotesCount is int &&
+      data.createdAt == request.time;
+    }
+
+    function isValidVote(data) {
+      return data.keys().hasAll(['userId', 'votedAt']) &&
+      data.keys().size() == 2 &&
+      data.userId == request.auth.uid &&
+      data.votedAt == request.time;
+    }
+
+    // Collection: reports
+    match /reports/{reportId} {
+      allow read: if true; // Publicly viewable reports
+
+      allow create: if isSignedIn() 
+        && isValidId(reportId)
+        && reportId == incoming().id
+        && isValidReport(incoming())
+        && incoming().status == 'Pending'
+        && incoming().upvotesCount == 0;
+
+      allow update: if isSignedIn()
+        && isValidId(reportId)
+        && isValidReport(incoming())
+        && incoming().id == existing().id
+        && incoming().userId == existing().userId
+        && incoming().createdAt == existing().createdAt
+        && (
+          // Action 1: Standard users upvoting/downvoting
+          (incoming().diff(existing()).affectedKeys().hasOnly(['upvotesCount']) && 
+            (incoming().upvotesCount == existing().upvotesCount + 1 || incoming().upvotesCount == existing().upvotesCount - 1))
+          ||
+          // Action 2: Original owner editing description/details while status is Pending
+          (existing().userId == request.auth.uid && existing().status == 'Pending' && 
+            incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'category', 'imageUrl']))
+          ||
+          // Action 3: Bootstrapped Admin resolving/rejecting reports
+          (request.auth.token.email == 'mainak.ghosh268@gmail.com' && 
+            incoming().diff(existing()).affectedKeys().hasOnly(['status']))
+        );
+
+      allow delete: if isSignedIn()
+        && isValidId(reportId)
+        && (existing().userId == request.auth.uid || request.auth.token.email == 'mainak.ghosh268@gmail.com')
+        && existing().status == 'Pending';
+
+      // Subcollection: votes
+      match /votes/{voteId} {
+        allow read: if true;
+        allow create: if isSignedIn()
+          && isValidId(voteId)
+          && voteId == request.auth.uid // Restricts double voting
+          && isValidVote(incoming());
+        allow delete: if isSignedIn()
+          && isValidId(voteId)
+          && voteId == request.auth.uid;
+      }
+    }
+  }
+}

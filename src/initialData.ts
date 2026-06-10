@@ -1,0 +1,92 @@
+import { Report } from "./types";
+
+export const sampleReports: Report[] = [
+  {
+    id: "rep-101",
+    title: "Crater-sized pothole on Outer Ring Road",
+    description: "Deep, hazardous pothole on Outer Ring Road near Bellandur flyover. Vehicles are force-swerving at night, causing high accident risk.",
+    category: "Potholes",
+    latitude: 12.9325,
+    longitude: 77.6841,
+    status: "In Progress",
+    userId: "user-200",
+    userName: "Aditya Hegde",
+    userEmail: "aditya@voters.in",
+    createdAt: new Date(Date.now() - 36 * 3600000).toISOString(), // 36 hours ago
+    upvotesCount: 24,
+    aiAnalysis: {
+      isCivicIssue: true,
+      category: "Potholes",
+      severity: "Critical",
+      suggestedTitle: "Severe ORR Pothole",
+      suggestedDescription: "Highly hazardous pothole located on a fast-transit flyover ramp.",
+      confidence: 96,
+    },
+  },
+  {
+    id: "rep-102",
+    title: "Water logging under metro line",
+    description: "Knee-deep water logging under the Indiranagar Metro Station following last night's rainfall. Drainage vents appear completely choked.",
+    category: "Water Logging",
+    latitude: 12.9716,
+    longitude: 77.6385,
+    status: "Pending",
+    userId: "user-201",
+    userName: "Priya Sharma",
+    userEmail: "priya@urban.org",
+    createdAt: new Date(Date.now() - 8 * 3600000).toISOString(), // 8 hours ago
+    upvotesCount: 15,
+    aiAnalysis: {
+      isCivicIssue: true,
+      category: "Water Logging",
+      severity: "High",
+      suggestedTitle: "Subway Water Logging",
+      suggestedDescription: "Sub-metro line flooded due to poor runoff capacity and silt clogging.",
+      confidence: 92,
+    },
+  },
+  {
+    id: "rep-103",
+    title: "Street lights dark since last Wednesday",
+    description: "Entire line of 5 street poles going dark along 100 Feet Road loop. It gets completely pitch black after 7 PM, creating safety concerns for women and pedestrians.",
+    category: "Street Light Not Working",
+    latitude: 12.9642,
+    longitude: 77.6401,
+    status: "Resolved",
+    userId: "user-202",
+    userName: "Nikhil Roy",
+    userEmail: "nikhil.roy@gmail.com",
+    createdAt: new Date(Date.now() - 5 * 24 * 3600000).toISOString(), // 5 days ago
+    upvotesCount: 33,
+    aiAnalysis: {
+      isCivicIssue: true,
+      category: "Street Light Not Working",
+      severity: "Medium",
+      suggestedTitle: "100ft Road Blackout",
+      suggestedDescription: "Street pole array failure likely due to secondary circuit fuse blow.",
+      confidence: 89,
+    },
+  },
+  {
+    id: "rep-104",
+    title: "Silt and garbage piled up next to community library",
+    description: "Massive pile of rotting household waste, construction debris, and plastic bins left on the footpath directly outside the community library entrance.",
+    category: "Garbage Dump",
+    latitude: 12.9231,
+    longitude: 77.6189,
+    status: "Pending",
+    userId: "user-203",
+    userName: "Amrita Sen",
+    userEmail: "sen.amrita@gmail.com",
+    createdAt: new Date(Date.now() - 2 * 3600000).toISOString(), // 2 hours ago
+    upvotesCount: 8,
+    aiAnalysis: {
+      isCivicIssue: true,
+      category: "Garbage Dump",
+      severity: "Medium",
+      suggestedTitle: "Footpath Waste Clog",
+      suggestedDescription: "Illegal littering and public dumping on student access walkway.",
+      confidence: 95,
+    },
+  }
+];
